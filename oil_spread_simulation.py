@@ -3,13 +3,11 @@ from tkinter import Menu
 from tkinter import filedialog
 from PIL import Image, ImageTk
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from matplotlib.widgets import Button
-from matplotlib.colors import ListedColormap
-
 
 global macierz
+
+
+filepath = 'C:\\kodilla\\CA\\grafiki\\tescik.bmp'
 
 # Funkcja otwiera mapę, tworzy pierwszą macierz i tworzy obraz morza, lądu  i komórek brzegowych
 def otworz_mape():
@@ -22,45 +20,28 @@ def otworz_mape():
         # Pobierz wymiary obrazu
         szerokosc, wysokosc = img.size
 
-        # Tworzenie macierzy wypełnionej zerami
         
-        macierz = np.empty((wysokosc, szerokosc), dtype=object)
-        #macierz = np.zeros((wysokosc, szerokosc))
-
-
-        # Iteruj przez każdy piksel i pobierz jego kolor w formacie RGB, tworzy macierz
-        for x in range(szerokosc):
-            for y in range(wysokosc):
-                pixel_color = img.getpixel((x, y))
-                if pixel_color == (0,0,255):
-                    
-                    macierz[y, x] = ["S", 0]
-
-                if pixel_color == (0,255,0):
-                    
-                    macierz[y, x] = ["L"]
-                    
-                elif pixel_color == (250,200,50):
-                    
-                    macierz[y, x] = ["KB", 0]
-                    
-                elif pixel_color == (0,0,0):
-                    
-                    macierz[y, x] = ["S", 1000]
-               
-
-
-        # Zamknij plik BMP
-        img.close()
+        
 
         #Czyszczenie obszaru Canvas
         canvas.delete("all")
 
         # Tworzenie obrazu morza, lądu i komórek brzegowych
-        for i in range(len(macierz)):
-            for j in range(len(macierz[0])):
-                value = macierz[i][j]
-                color = get_color(value)
+        for i in range(wysokosc):
+            for j in range(szerokosc):
+                pixel_color = img.getpixel((j, i))
+                if pixel_color == (0, 0, 255):
+                    color = "blue"  # Kolor morza
+                elif pixel_color == (0, 255, 0):
+                    color = "green"  # Kolor lądu
+                elif pixel_color == (250, 200, 50):
+                    color = "yellow"  # Kolor komórek brzegowych
+                elif pixel_color == (0, 0, 0):
+                    color = "black"  # Kolor inny
+                
+
+
+
                 canvas.create_rectangle(
                     j * cell_width,
                     i * cell_height,
@@ -69,20 +50,42 @@ def otworz_mape():
                     fill=color,
                     outline=""
                 )
-    return macierz          
-
-# Funkcja do wydruku macierzy
-def wydrukuj_macierz(macierz_gotowa):
-    for wiersz in macierz_gotowa:
-        print(wiersz)
-    print("\n")
+               
+    
+        # Zamknij plik BMP - tu może być powód problemu !!! ??????
+        #img.close()
 
 
-# Funkcja wyświetla iterację symulacji
 
-def iteracja(macierz_gotowa):
-    nowa_macierz = np.copy(macierz_gotowa)
-    wysokosc, szerokosc = macierz_gotowa.shape
+
+
+def tworzenie_macierzy(filepath):
+    img = Image.open(filepath)
+    szerokosc, wysokosc = img.size
+    macierz = np.empty((wysokosc, szerokosc), dtype=object)
+
+    for x in range(szerokosc):
+        for y in range(wysokosc):
+            pixel_color = img.getpixel((x, y))
+            if pixel_color == (0, 0, 255):
+                macierz[y, x] = ["S", 0]
+            elif pixel_color == (0, 255, 0):
+                macierz[y, x] = ["L"]
+            elif pixel_color == (250, 200, 50):
+                macierz[y, x] = ["KB", 0]
+            elif pixel_color == (0, 0, 0):
+                macierz[y, x] = ["S", 5000]
+
+    img.close()
+    return macierz
+
+
+
+
+# Funkcja tworzy iterację symulacji
+def iteracja(macierz):
+    nowa_macierz = np.copy(macierz)
+    wysokosc, szerokosc = macierz.shape
 
     for i in range(wysokosc):
         for j in range(szerokosc):
@@ -99,28 +102,55 @@ def iteracja(macierz_gotowa):
                         continue  # Pomijamy komórkę, którą analizujemy
 
                     if  i + x >= 0 and i + x < wysokosc and  j + y >= 0  and j + 1 < szerokosc:
-                        ilosc_ropy = ilosc_ropy + macierz_gotowa[i + x][j + y][1]
+                        ilosc_ropy = ilosc_ropy + macierz[i + x][j + y][1]
 
 
-            nowa_macierz[i][j][1] = ilosc_ropy / 8
+            nowa_macierz[i][j][1] = round(ilosc_ropy / 8)
 
-
-            
-            #if macierz[i, j] == ["S", 0]:
-                # Symulacja rozprzestrzeniania się ropy
-                # Tutaj można dodać logikę rozprzestrzeniania się ropy na podstawie sąsiednich komórek
-                
-                # Dyfuzja
-        
-            #elif macierz[i, j] == ["KB", 0]:
-                # Symulacja rozprzestrzeniania się brzegów
-                # Tutaj można dodać logikę rozprzestrzeniania się brzegów na podstawie sąsiednich komórek
-                #pass
 
     return nowa_macierz
 
+def rysowanie_mapy(liczba_iteracji):
+    
 
-# Funkcja do przypisywania kolorów na podstawie wartości
+
+    # Wykonujemy n [for k in range(n)] iteracji automatu komórkowego i drukujemy macierz po każdej iteracji
+    for _ im range(liczba_iteracji):
+        #print(f"Iteracja {k + 1}:\n")
+        #wydrukuj_macierz(macierz_gotowa)
+
+        macierz = iteracja(macierz)
+
+        # Rysuje obraz iteracji symulacji 
+        for i in range(len(macierz)):
+                for j in range(len(macierz[0])):
+                    value = macierz[i][j]
+                    color = get_sim_color(value)
+                    canvas.create_rectangle(
+                        j * cell_width,
+                        i * cell_height,
+                        (j + 1) * cell_width,
+                        (i + 1) * cell_height,
+                        fill=color,
+                        outline=""
+                    )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Funkcja do przypisywania kolorów do początkowej macierzy na podstawie wartości
 def get_color(value):
     if value == ["S", 0]:
         return "blue"
@@ -130,14 +160,37 @@ def get_color(value):
         return "yellow"
     else:
         return "black"
+    
+
+def get_sim_color(value):
+    if value[1] >= 100:
+        return "black"
+    elif value[1] >= 50 and value[1] < 100:
+        return "purple"
+    elif value[1] >= 25 and value[1] < 50:
+        return "red"
+    elif value[1] >= 15 and value[1] < 25:
+        return "orange"
+    elif value[1] >= 5 and value[1] < 15:
+        return "yellow"
+    elif value[1] >= 2 and value[1] < 5:
+        return "cyan"
+    elif value[1] >= 0.5 and value[1] <2:
+        return "white"
+    elif value[1] < 0.5:
+        return "blue"
+    
+
+
+
+def autor():
+    pass
+
 
 
 def wyjdz():
     root.quit()
 
-
-def autor():
-    pass
 
 
 
@@ -169,13 +222,25 @@ menu_bar.add_cascade(label="Iteracja", menu=iteracja_menu)
 menu_bar.add_cascade(label="Autor", menu=autor_menu)
 
 # Dodawanie opcji do menu "Plik"
-plik_menu.add_command(label="Otwórz mape", command=otworz_mape)
+plik_menu.add_command(label="Otwórz mape", command = otworz_mape)
 plik_menu.add_separator()
+plik_menu.add_command(label="Stwórz macierz", command = tworzenie_macierzy(filepath))
+plik_menu.add_separator()
+
+
+
+
+plik_menu.add_command(label="Iteracja", command = rysowanie_mapy(2)) #          <-- ************************* tu podziałać
+plik_menu.add_separator()
+
+
+
+
 plik_menu.add_command(label="Wyjdź", command=wyjdz)
 
 
 # Dodawanie opcji do menu Iteracja
-#iteracja_menu.add_command(label="Iteracja - 1", command=krok_symulacji)
+#iteracja_menu.add_command(label="Iteracja - 1", command=iteracja)
 iteracja_menu.add_separator()
 
 # Dodawanie opcji do menu Autor
@@ -185,17 +250,14 @@ autor_menu.add_separator()
 
 
 
-macierz_gotowa = otworz_mape()
-
-# Wykonujemy 2 iteracji automatu komórkowego i drukujemy macierz po każdej iteracji
-for k in range(2):
-    print(f"Iteracja {k + 1}:\n")
-    wydrukuj_macierz(macierz_gotowa)
-    macierz_gotowa = iteracja(macierz_gotowa)
 
 
+
+#Utworzenie pierwszej macierzy jeśli mapa jest nowo wczytana
+
+
+
+#macierz = tworzenie_macierzy()
 
 
 root.mainloop()
-
-
