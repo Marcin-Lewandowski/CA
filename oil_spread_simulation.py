@@ -4,13 +4,15 @@ from tkinter import filedialog
 from PIL import Image, ImageTk
 import numpy as np
 
-global macierz
+
 
 
 filepath = 'C:\\kodilla\\CA\\grafiki\\tescik.bmp'
 
 # Funkcja otwiera mapę, tworzy pierwszą macierz i tworzy obraz morza, lądu  i komórek brzegowych
 def otworz_mape():
+
+    global macierz  # Dostęp do zmiennej globalnej
     filepath = filedialog.askopenfilename(title="Otwórz mapę")
     if filepath:
 
@@ -20,9 +22,10 @@ def otworz_mape():
         # Pobierz wymiary obrazu
         szerokosc, wysokosc = img.size
 
-        
-        
+        # Inicjowanie początkowej macierzy
+        macierz = tworzenie_macierzy(filepath)
 
+        
         #Czyszczenie obszaru Canvas
         canvas.delete("all")
 
@@ -53,7 +56,7 @@ def otworz_mape():
                
     
         # Zamknij plik BMP - tu może być powód problemu !!! ??????
-        #img.close()
+        img.close()
 
 
 
@@ -81,7 +84,6 @@ def tworzenie_macierzy(filepath):
 
 
 
-
 # Funkcja tworzy iterację symulacji
 def iteracja(macierz):
     nowa_macierz = np.copy(macierz)
@@ -98,26 +100,34 @@ def iteracja(macierz):
 
             for x in range(-1, 2):
                 for y in range(-1, 2):
+
+                    '''
                     if x == 0 and y == 0:
                         continue  # Pomijamy komórkę, którą analizujemy
+                    
+                    '''
+                    
 
                     if  i + x >= 0 and i + x < wysokosc and  j + y >= 0  and j + 1 < szerokosc:
                         ilosc_ropy = ilosc_ropy + macierz[i + x][j + y][1]
 
 
-            nowa_macierz[i][j][1] = round(ilosc_ropy / 8)
+            nowa_macierz[i][j][1] = round(ilosc_ropy / 9)
 
 
     return nowa_macierz
 
 def rysowanie_mapy(liczba_iteracji):
-    
+
+    global macierz  # Dostęp do zmiennej globalnej
+
+
+    licznik = 0
 
 
     # Wykonujemy n [for k in range(n)] iteracji automatu komórkowego i drukujemy macierz po każdej iteracji
-    for _ im range(liczba_iteracji):
-        #print(f"Iteracja {k + 1}:\n")
-        #wydrukuj_macierz(macierz_gotowa)
+    while licznik < liczba_iteracji:
+       
 
         macierz = iteracja(macierz)
 
@@ -134,18 +144,7 @@ def rysowanie_mapy(liczba_iteracji):
                         fill=color,
                         outline=""
                     )
-
-
-
-
-
-
-
-
-
-
-
-
+        licznik = licznik + 1
 
 
 
@@ -226,16 +225,8 @@ plik_menu.add_command(label="Otwórz mape", command = otworz_mape)
 plik_menu.add_separator()
 plik_menu.add_command(label="Stwórz macierz", command = tworzenie_macierzy(filepath))
 plik_menu.add_separator()
-
-
-
-
-plik_menu.add_command(label="Iteracja", command = rysowanie_mapy(2)) #          <-- ************************* tu podziałać
+plik_menu.add_command(label="Iteracja", command=lambda: rysowanie_mapy(2))  # Podaj odpowiednią liczbę iteracji
 plik_menu.add_separator()
-
-
-
-
 plik_menu.add_command(label="Wyjdź", command=wyjdz)
 
 
@@ -248,13 +239,7 @@ autor_menu.add_command(label="O autorze", command=autor)
 autor_menu.add_separator()
 
 
-
-
-
-
-
 #Utworzenie pierwszej macierzy jeśli mapa jest nowo wczytana
-
 
 
 #macierz = tworzenie_macierzy()
