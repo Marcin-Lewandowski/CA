@@ -77,7 +77,7 @@ def tworzenie_macierzy(filepath):
             elif pixel_color == (250, 200, 50):
                 macierz[y, x] = ["KB", 0]
             elif pixel_color == (0, 0, 0):
-                macierz[y, x] = ["S", 5000]
+                macierz[y, x] = ["S", 2000]
 
     img.close()
     return macierz
@@ -92,9 +92,16 @@ def iteracja(macierz):
     for i in range(wysokosc):
         for j in range(szerokosc):
 
-
-
             ilosc_ropy = 0
+            #kierunek = 0    # Dyfuzja
+            #kierunek = 1    # Północ
+            #kierunek = 2   # na południe
+            #kierunek = 3   # na wschód
+            #kierunek = 4   # na zachód
+            #kierunek = 5   # na północny wschód
+            #kierunek = 6  # na południowy wschód
+            #kierunek = 7  # na południowy zachód
+            kierunek = 8  # na północny zachód
 
             # Obliczanie sumarycznej ilości ropy w 8 sąsiednich komórkach
 
@@ -104,15 +111,133 @@ def iteracja(macierz):
                     '''
                     if x == 0 and y == 0:
                         continue  # Pomijamy komórkę, którą analizujemy
-                    
                     '''
                     
 
-                    if  i + x >= 0 and i + x < wysokosc and  j + y >= 0  and j + 1 < szerokosc:
+                    # 0 - Dyfuzja
+
+                    if  i + x >= 0 and i + x < wysokosc and  j + y >= 0  and j + 1 < szerokosc and kierunek == 0:
+
                         ilosc_ropy = ilosc_ropy + macierz[i + x][j + y][1]
 
+                    # 1 - kierunek na Północ
 
-            nowa_macierz[i][j][1] = round(ilosc_ropy / 9)
+                    elif i + x >= 0 and i + x < wysokosc and  j + y >= 0  and j + 1 < szerokosc and kierunek == 1:
+
+                        if x == -1 and y == 0:
+                            continue
+
+                        elif x == 1 and y == 0:
+                            ilosc_ropy = ilosc_ropy + (2 * macierz[i + x][j + y][1])
+
+                        else: 
+                            ilosc_ropy = ilosc_ropy + macierz[i + x][j + y][1]
+
+                    # 2 - kierunek na Południe
+
+                    elif i + x >= 0 and i + x < wysokosc and  j + y >= 0  and j + 1 < szerokosc and kierunek == 2:
+
+                        if x == 1 and y == 0:
+                            continue
+
+                        elif x == -1 and y == 0:
+                            ilosc_ropy = ilosc_ropy + (2 * macierz[i + x][j + y][1])
+
+                        else: 
+                            ilosc_ropy = ilosc_ropy + macierz[i + x][j + y][1]
+
+                    # 3 - kierunek na Wschód
+
+                    elif i + x >= 0 and i + x < wysokosc and  j + y >= 0  and j + 1 < szerokosc and kierunek == 3:
+
+                        if x == 0 and y == 1:
+                            continue
+
+                        elif x == 0 and y == -1:
+                            ilosc_ropy = ilosc_ropy + (2 * macierz[i + x][j + y][1])
+
+                        else: 
+                            ilosc_ropy = ilosc_ropy + macierz[i + x][j + y][1]
+
+
+                    # 4 - kierunek na Zachód
+
+                    elif i + x >= 0 and i + x < wysokosc and  j + y >= 0  and j + 1 < szerokosc and kierunek == 4:
+
+                        if x == 0 and y == -1:
+                            continue
+
+                        elif x == 0 and y == 1:
+                            ilosc_ropy = ilosc_ropy + (2 * macierz[i + x][j + y][1])
+
+                        else: 
+                            ilosc_ropy = ilosc_ropy + macierz[i + x][j + y][1]
+
+
+                    # 5 - kierunek na północny wschód
+
+                    elif i + x >= 0 and i + x < wysokosc and  j + y >= 0  and j + 1 < szerokosc and kierunek == 5:
+
+                        if x == -1 and y == 1:
+                            continue
+
+                        elif x == 1 and y == -1:
+                            ilosc_ropy = ilosc_ropy + (2 * macierz[i + x][j + y][1])
+
+                        else: 
+                            ilosc_ropy = ilosc_ropy + macierz[i + x][j + y][1]
+
+
+                    # 6 - kierunek na południowy wschód
+
+                    elif i + x >= 0 and i + x < wysokosc and  j + y >= 0  and j + 1 < szerokosc and kierunek == 6:
+
+                        if x == 1 and y == 1:
+                            continue
+
+                        elif x == -1 and y == -1:
+                            ilosc_ropy = ilosc_ropy + (2 * macierz[i + x][j + y][1])
+
+                        else: 
+                            ilosc_ropy = ilosc_ropy + macierz[i + x][j + y][1]
+
+
+                    # 7 - kierunek na południowy zachód
+
+                    elif i + x >= 0 and i + x < wysokosc and  j + y >= 0  and j + 1 < szerokosc and kierunek == 7:
+
+                        if x == 1 and y == -1:
+                            continue
+
+                        elif x == -1 and y == 1:
+                            ilosc_ropy = ilosc_ropy + (2 * macierz[i + x][j + y][1])
+
+                        else: 
+                            ilosc_ropy = ilosc_ropy + macierz[i + x][j + y][1]
+
+
+
+                    # 8 - kierunek na północny zachód
+
+                    elif i + x >= 0 and i + x < wysokosc and  j + y >= 0  and j + 1 < szerokosc and kierunek == 8:
+
+                        if x == -1 and y == -1:
+                            continue
+
+                        elif x == 1 and y == 1:
+                            ilosc_ropy = ilosc_ropy + (2 * macierz[i + x][j + y][1])
+
+                        else: 
+                            ilosc_ropy = ilosc_ropy + macierz[i + x][j + y][1]
+
+
+                        
+
+
+            
+
+            nowa_macierz[i][j][1] = ilosc_ropy / 9
+
 
 
     return nowa_macierz
@@ -164,19 +289,22 @@ def get_color(value):
 def get_sim_color(value):
     if value[1] >= 100:
         return "black"
-    elif value[1] >= 50 and value[1] < 100:
+    
+    elif value[1] >= 75 and value[1] < 100:
+        return "brown"
+    elif value[1] >= 50 and value[1] < 75:
         return "purple"
     elif value[1] >= 25 and value[1] < 50:
         return "red"
     elif value[1] >= 15 and value[1] < 25:
         return "orange"
-    elif value[1] >= 5 and value[1] < 15:
+    elif value[1] >= 7 and value[1] < 15:
         return "yellow"
-    elif value[1] >= 2 and value[1] < 5:
+    elif value[1] >= 3 and value[1] < 7:
         return "cyan"
-    elif value[1] >= 0.5 and value[1] <2:
+    elif value[1] >= 1 and value[1] < 3:
         return "white"
-    elif value[1] < 0.5:
+    elif value[1] < 1:
         return "blue"
     
 
@@ -224,14 +352,14 @@ menu_bar.add_cascade(label="Autor", menu=autor_menu)
 plik_menu.add_command(label="Otwórz mape", command = otworz_mape)
 plik_menu.add_separator()
 plik_menu.add_command(label="Stwórz macierz", command = tworzenie_macierzy(filepath))
-plik_menu.add_separator()
-plik_menu.add_command(label="Iteracja", command=lambda: rysowanie_mapy(2))  # Podaj odpowiednią liczbę iteracji
+
+
 plik_menu.add_separator()
 plik_menu.add_command(label="Wyjdź", command=wyjdz)
 
 
 # Dodawanie opcji do menu Iteracja
-#iteracja_menu.add_command(label="Iteracja - 1", command=iteracja)
+iteracja_menu.add_command(label="Iteracja x 2", command=lambda: rysowanie_mapy(2))  # Podaj odpowiednią liczbę iteracji
 iteracja_menu.add_separator()
 
 # Dodawanie opcji do menu Autor
@@ -239,10 +367,20 @@ autor_menu.add_command(label="O autorze", command=autor)
 autor_menu.add_separator()
 
 
-#Utworzenie pierwszej macierzy jeśli mapa jest nowo wczytana
+# Dodaj pole tekstowe do wprowadzenia liczby iteracji
+iteracje_entry = tk.Entry(root)
+iteracje_entry.pack()
 
+# Utwórz funkcję, która będzie wywoływana po kliknięciu przycisku "Start"
+def rozpocznij_symulacje():
+    # Pobierz wartość wprowadzoną przez użytkownika
+    liczba_iteracji = int(iteracje_entry.get())
+    
+    # Wywołaj funkcję rysowanie_mapy z wprowadzoną liczbą iteracji
+    rysowanie_mapy(liczba_iteracji)
 
-#macierz = tworzenie_macierzy()
-
+# Dodaj przycisk "Start" do rozpoczęcia symulacji
+start_button = tk.Button(root, text="Start", command=rozpocznij_symulacje)
+start_button.pack()
 
 root.mainloop()
