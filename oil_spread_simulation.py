@@ -7,7 +7,9 @@ import numpy as np
 
 
 
-filepath = 'C:\\kodilla\\CA\\grafiki\\tescik.bmp'
+filepath = 'C:\\kodilla\\CA\\grafiki\\tescik1.bmp'
+#Dyfuzja jako stan początkowy rozpływu ropy: kierunek = 0
+kierunek = 0
 
 # Funkcja otwiera mapę, tworzy pierwszą macierz i tworzy obraz morza, lądu  i komórek brzegowych
 def otworz_mape():
@@ -93,26 +95,12 @@ def iteracja(macierz):
         for j in range(szerokosc):
 
             ilosc_ropy = 0
-            #kierunek = 0    # Dyfuzja
-            #kierunek = 1    # Północ
-            #kierunek = 2   # na południe
-            #kierunek = 3   # na wschód
-            #kierunek = 4   # na zachód
-            #kierunek = 5   # na północny wschód
-            #kierunek = 6  # na południowy wschód
-            #kierunek = 7  # na południowy zachód
-            kierunek = 8  # na północny zachód
 
             # Obliczanie sumarycznej ilości ropy w 8 sąsiednich komórkach
 
             for x in range(-1, 2):
                 for y in range(-1, 2):
 
-                    '''
-                    if x == 0 and y == 0:
-                        continue  # Pomijamy komórkę, którą analizujemy
-                    '''
-                    
 
                     # 0 - Dyfuzja
 
@@ -235,7 +223,7 @@ def iteracja(macierz):
 
 
             
-
+            # Wzór na ilość ropy dla komórki morza
             nowa_macierz[i][j][1] = ilosc_ropy / 9
 
 
@@ -250,26 +238,30 @@ def rysowanie_mapy(liczba_iteracji):
     licznik = 0
 
 
-    # Wykonujemy n [for k in range(n)] iteracji automatu komórkowego i drukujemy macierz po każdej iteracji
+    # Wykonujemy n  iteracji [liczba iteracji wpisywana w oknie dialogowym] automatu komórkowego i drukujemy macierz 
     while licznik < liczba_iteracji:
        
 
         macierz = iteracja(macierz)
-
-        # Rysuje obraz iteracji symulacji 
-        for i in range(len(macierz)):
-                for j in range(len(macierz[0])):
-                    value = macierz[i][j]
-                    color = get_sim_color(value)
-                    canvas.create_rectangle(
-                        j * cell_width,
-                        i * cell_height,
-                        (j + 1) * cell_width,
-                        (i + 1) * cell_height,
-                        fill=color,
-                        outline=""
-                    )
         licznik = licznik + 1
+
+        if licznik == liczba_iteracji:
+
+            # Rysuje obraz iteracji symulacji dla powierzchnii morza
+            for i in range(len(macierz)):
+                    for j in range(len(macierz[0])):
+                        value = macierz[i][j]
+                        color = get_sim_sea_color(value)
+                        canvas.create_rectangle(
+                            j * cell_width,
+                            i * cell_height,
+                            (j + 1) * cell_width,
+                            (i + 1) * cell_height,
+                            fill=color,
+                            outline=""
+                        )
+        
+    
 
 
 
@@ -285,11 +277,11 @@ def get_color(value):
     else:
         return "black"
     
+# Kolorystyka dla komórek morza
+def get_sim_sea_color(value):
 
-def get_sim_color(value):
     if value[1] >= 100:
         return "black"
-    
     elif value[1] >= 75 and value[1] < 100:
         return "brown"
     elif value[1] >= 50 and value[1] < 75:
@@ -308,10 +300,62 @@ def get_sim_color(value):
         return "blue"
     
 
+# Kolorystyka dla komórek brzegowych z zawartością ropy
+def get_sim_border_color(value):
+
+    if value[1] > 0 and value[1] <= 5:
+        return "red"
+    elif value[1] > 5 and value[1] <= 10:
+        return "brown"
+    else:
+        return "black"
+
+
+
 
 
 def autor():
     pass
+
+def dyfuzja():
+    global kierunek
+    kierunek = 0
+
+def polnoc():
+    global kierunek
+    kierunek = 1
+
+def poludnie():
+    global kierunek
+    kierunek = 2
+
+def wschod():
+    global kierunek
+    kierunek = 3
+    
+def zachod():
+    global kierunek
+    kierunek = 4
+
+def polnocny_wschod():
+    global kierunek
+    kierunek = 5
+
+def poludniowy_wschod():
+    global kierunek
+    kierunek = 6
+
+def poludniowy_zachod():
+    global kierunek
+    kierunek = 7
+
+def polnocny_zachod():
+    global kierunek
+    kierunek = 8
+    
+
+
+
 
 
 
@@ -343,17 +387,17 @@ root.config(menu=menu_bar)
 plik_menu = Menu(menu_bar)
 iteracja_menu = Menu(menu_bar)
 autor_menu = Menu(menu_bar)
+kierunek_menu = Menu(menu_bar)
 
 menu_bar.add_cascade(label="Plik", menu=plik_menu)
 menu_bar.add_cascade(label="Iteracja", menu=iteracja_menu)
+menu_bar.add_cascade(label="Kierunek wiatru", menu=kierunek_menu)
 menu_bar.add_cascade(label="Autor", menu=autor_menu)
 
 # Dodawanie opcji do menu "Plik"
 plik_menu.add_command(label="Otwórz mape", command = otworz_mape)
 plik_menu.add_separator()
 plik_menu.add_command(label="Stwórz macierz", command = tworzenie_macierzy(filepath))
-
-
 plik_menu.add_separator()
 plik_menu.add_command(label="Wyjdź", command=wyjdz)
 
@@ -361,6 +405,18 @@ plik_menu.add_command(label="Wyjdź", command=wyjdz)
 # Dodawanie opcji do menu Iteracja
 iteracja_menu.add_command(label="Iteracja x 2", command=lambda: rysowanie_mapy(2))  # Podaj odpowiednią liczbę iteracji
 iteracja_menu.add_separator()
+
+kierunek_menu.add_command(label="Dyfuzja", command=dyfuzja)
+kierunek_menu.add_command(label="Północ", command=polnoc)
+kierunek_menu.add_command(label="Południe", command=poludnie)
+kierunek_menu.add_command(label="Wschód", command=wschod)
+kierunek_menu.add_command(label="Zachód", command=zachod)
+
+kierunek_menu.add_command(label="Północny wschód", command=polnocny_wschod)
+kierunek_menu.add_command(label="Południowy wschód", command=poludniowy_wschod)
+kierunek_menu.add_command(label="Południowy zachód", command=poludniowy_zachod)
+kierunek_menu.add_command(label="Północny zachód", command=polnocny_zachod)
+
 
 # Dodawanie opcji do menu Autor
 autor_menu.add_command(label="O autorze", command=autor)
