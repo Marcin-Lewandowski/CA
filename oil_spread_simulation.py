@@ -96,28 +96,26 @@ def tworzenie_macierzy(filepath):
 def iteracja(macierz):
     nowa_macierz = np.copy(macierz)
     wysokosc, szerokosc = macierz.shape
-    liczymy = 0
+    
 
     for i in range(wysokosc):
         for j in range(szerokosc):
 
 
-
             # Logika dla komórki morza
             if macierz[i][j][0] == "S":
-                #print("Wchodzimy na morze")
-                liczymy = liczymy + 1
-                #print(liczymy)
+                
                 
                 ilosc_ropy = 0
                 ikm = 0        # ilosc sąsiednich komórek morza + komórka analizowana
+                ikb = 0         # ilosc sąsiednich komórek brzegowych - potrzebne do operacji odejmowania ilości ropy z komórki gdy jest ona w sąsiedztwie komórek brzegowych
 
 
                 for x in range(-1, 2):
                     for y in range(-1, 2):
 
                         # sprawdza czy komórki dookoła są komórkami morza, jeśli tak to zmienna ikm zwiększa się o 1    
-                        # if (0 <= i + x < wysokosc) and (0 <= j + y < szerokosc)
+                        
 
                         if (0 <= i + x < wysokosc) and (0 <= j + y < szerokosc):
 
@@ -125,7 +123,7 @@ def iteracja(macierz):
                             if macierz[i + x][j + y][0] == "S":
 
                                 ikm = ikm + 1
-                                ilosc_ropy = ilosc_ropy + macierz[i + x][j + y][1]
+                                ilosc_ropy = round(ilosc_ropy + macierz[i + x][j + y][1], 2)
                                 #print(" Ilosc komorek morza: ", ikm)
 
                             else:
@@ -133,71 +131,62 @@ def iteracja(macierz):
 
 
 
-                #print(" Ilosc komorek morza: ", ikm, "Ilość ropy: " , ilosc_ropy)
-
-
                 if ikm == 9:
                     if kierunek == 0:
                             
                         # Wzór na ilość ropy dla komórki morza
                         # 0 - Dyfuzja
-                        nowa_macierz[i][j][1] = ilosc_ropy / 9
+                        nowa_macierz[i][j][1] = round(ilosc_ropy / 9, 2)
 
                     elif kierunek == 1:
 
                         # 1 - kierunek na Północ
-                        nowa_macierz[i][j][1] = (ilosc_ropy  - macierz[i - 1][j][1] + macierz[i + 1][j][1]) / 9
+                        nowa_macierz[i][j][1] = round((ilosc_ropy  - macierz[i - 1][j][1] + macierz[i + 1][j][1]) / 9, 2)
 
                     elif kierunek == 2:
 
                         # 2 - kierunek na południe
-                        nowa_macierz[i][j][1] = (ilosc_ropy  - macierz[i + 1][j][1] + macierz[i - 1][j][1]) / 9
+                        nowa_macierz[i][j][1] = round((ilosc_ropy  - macierz[i + 1][j][1] + macierz[i - 1][j][1]) / 9, 2)
 
 
                     elif kierunek == 3:
 
                         # 3 - kierunek na wschód
-                        nowa_macierz[i][j][1] = (ilosc_ropy  - macierz[i][j + 1][1] + macierz[i][j - 1][1]) / 9
+                        nowa_macierz[i][j][1] = round((ilosc_ropy  - macierz[i][j + 1][1] + macierz[i][j - 1][1]) / 9, 2)
 
                     elif kierunek == 4:
 
                         # 4 - kierunek na zachód
-                        nowa_macierz[i][j][1] = (ilosc_ropy  - macierz[i][j - 1][1] + macierz[i][j + 1][1]) / 9
+                        nowa_macierz[i][j][1] = round((ilosc_ropy  - macierz[i][j - 1][1] + macierz[i][j + 1][1]) / 9, 2)
 
                     elif kierunek == 5:
 
                         # 5 - kierunek północny wschód
-                        nowa_macierz[i][j][1] = (ilosc_ropy  - macierz[i - 1][j + 1][1] + macierz[i + 1][j - 1][1]) / 9
+                        nowa_macierz[i][j][1] = round((ilosc_ropy  - macierz[i - 1][j + 1][1] + macierz[i + 1][j - 1][1]) / 9, 2)
 
 
                     elif kierunek == 6:
 
                         # 6 - kierunek południowy wschód
-                        nowa_macierz[i][j][1] = (ilosc_ropy  - macierz[i + 1][j + 1][1] + macierz[i - 1][j - 1][1]) / 9
+                        nowa_macierz[i][j][1] = round((ilosc_ropy  - macierz[i + 1][j + 1][1] + macierz[i - 1][j - 1][1]) / 9, 2)
 
 
                     elif kierunek == 7:
 
                         # 7 - kierunek południowy zachód
-                        nowa_macierz[i][j][1] = (ilosc_ropy  - macierz[i + 1][j - 1][1] + macierz[i - 1][j + 1][1]) / 9
+                        nowa_macierz[i][j][1] = round((ilosc_ropy  - macierz[i + 1][j - 1][1] + macierz[i - 1][j + 1][1]) / 9, 2)
 
 
                     elif kierunek == 8:
 
                         # 8 - kierunek północny zachód
-                        nowa_macierz[i][j][1] = (ilosc_ropy  - macierz[i - 1][j - 1][1] + macierz[i + 1][j + 1][1]) / 9
+                        nowa_macierz[i][j][1] = round((ilosc_ropy  - macierz[i - 1][j - 1][1] + macierz[i + 1][j + 1][1]) / 9, 2)
 
 
 
                         
                 else:
-                    nowa_macierz[i][j][1] = ilosc_ropy / ikm
-
-
-
-
-
-
+                    nowa_macierz[i][j][1] = round(ilosc_ropy / ikm, 2)
 
 
 
@@ -206,8 +195,35 @@ def iteracja(macierz):
             # Logika dla komórki brzegowej
             elif macierz[i][j][0] == "KB":
 
+                ilosc_ropy_w_komorce_brzegowej = 0
+                ikm_obok_komórki_brzegowej = 0
 
-                pass
+                for x in range(-1, 2):
+                    for y in range(-1, 2):
+
+                        # sprawdza czy komórki dookoła są komórkami morza, jeśli tak to zmienna ikm zwiększa się o 1    
+                        
+
+                        if (0 <= i + x < wysokosc) and (0 <= j + y < szerokosc):
+
+                            # Jeżeli sąsiednia komórka jest komórką morza to ikm zwiększa się o 1 oraz ilość ropy sumuje się
+                            if macierz[i + x][j + y][0] == "S":
+
+                                ikm_obok_komórki_brzegowej = ikm_obok_komórki_brzegowej + 1
+                                ilosc_ropy_w_komorce_brzegowej = ilosc_ropy_w_komorce_brzegowej + round(macierz[i + x][j + y][1], 2)
+                                
+
+                            else:
+                                ikm_obok_komórki_brzegowej = ikm_obok_komórki_brzegowej + 0
+
+                if ikm_obok_komórki_brzegowej == 0:
+                    ikm_obok_komórki_brzegowej = 1
+                    print("Współrzędne felernej komorki brzegowej:  ", i, j)
+                nowa_macierz[i][j][1] = round(macierz[i][j][1] + (ilosc_ropy_w_komorce_brzegowej / ikm_obok_komórki_brzegowej), 2)
+
+
+            
+
 
 
             elif macierz[i][j][0] == "L" or macierz[i][j][0] == "U":
@@ -216,9 +232,6 @@ def iteracja(macierz):
                 pass
                 
                         
-
-
-
 
 
     return nowa_macierz
@@ -240,20 +253,32 @@ def rysowanie_mapy(liczba_iteracji):
 
         if licznik == liczba_iteracji:
 
+
             # Rysuje obraz iteracji symulacji dla powierzchnii morza
             for i in range(len(macierz)):
                     for j in range(len(macierz[0])):
                         value = macierz[i][j]
-                        color = get_sim_sea_color(value)
-                        canvas.create_rectangle(
-                            j * cell_width,
-                            i * cell_height,
-                            (j + 1) * cell_width,
-                            (i + 1) * cell_height,
-                            fill=color,
-                            outline=""
-                        )
-        
+                        if value[0] == 'S':
+                            color = get_sim_sea_color(value)
+                            canvas.create_rectangle(
+                                j * cell_width,
+                                i * cell_height,
+                                (j + 1) * cell_width,
+                                (i + 1) * cell_height,
+                                fill=color,
+                                outline=""
+                            )
+                        elif value[0] == "KB":
+                            color = get_sim_border_color(value)
+                            canvas.create_rectangle(
+                                j * cell_width,
+                                i * cell_height,
+                                (j + 1) * cell_width,
+                                (i + 1) * cell_height,
+                                fill=color,
+                                outline=""
+                            )
+                            
     
 
 
@@ -289,18 +314,22 @@ def get_sim_sea_color(value):
         return "yellow"
     elif value[1] >= 3 and value[1] < 7:
         return "cyan"
-    elif value[1] >= 1 and value[1] < 3:
+    elif value[1] >= 0.2 and value[1] < 3:
         return "white"
-    elif value[1] < 1:
+    elif value[1] < 0.2:
         return "blue"
     
 
 # Kolorystyka dla komórek brzegowych z zawartością ropy
 def get_sim_border_color(value):
 
-    if value[1] > 0 and value[1] <= 5:
-        return "red"
+    if value[1] <= 0.5:
+        return "yellow"
+    elif value[1] > 0.5 and value[1] <= 5:
+        return "orange"
     elif value[1] > 5 and value[1] <= 10:
+        return "red"
+    elif value[1] > 10 and value[1] <= 20:
         return "brown"
     else:
         return "black"
@@ -348,8 +377,6 @@ def polnocny_zachod():
     global kierunek
     kierunek = 8
     
-
-
 
 
 
