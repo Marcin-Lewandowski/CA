@@ -1,13 +1,10 @@
 import tkinter as tk
-from tkinter import Menu
-from tkinter import filedialog
+from tkinter import Menu, filedialog, messagebox
 from PIL import Image, ImageTk
 import numpy as np
 
 
-
-
-filepath = 'C:\\kodilla\\CA\\grafiki\\tescik1.bmp'
+#filepath = 'C:\\kodilla\\CA\\grafiki\\tescik1.bmp'
 
 #Dyfuzja jako stan początkowy rozpływu ropy: kierunek = 0
 kierunek = 0
@@ -337,9 +334,11 @@ def get_sim_border_color(value):
 
 
 
-
 def autor():
-    pass
+    messagebox.showinfo("Autor programu", "Cześć. Mam na imię Marcin. Ten program stworzyłem na bazie mojej pracy dyplomowej z 2006 roku. Wtedy pisałem program w oprogramowaniu Delphi 7. Stworzenie aplikacji trwało wtedy baaaardzo długo - kilka miesięcy. Po przeglądzie kodu który wówczas wysmarzyłem, postanowiłem napisać kod w Pythonie. Zajęło mi to tydzień. Bazując na wiedzy którą nabyłem wykonując proste programy w Pythonie i z pomocą biliotek udało mi się stworzyć program który symuluje rozprzestrzenianie się ropy naftowej na powierzchni morza oraz jej kumulację w komórkach brzegowych lądu.")
+
+def dzialanie_programu():
+    messagebox.showinfo("Działanie programu", " Działanie . . . ")
 
 def dyfuzja():
     global kierunek
@@ -419,14 +418,19 @@ menu_bar.add_cascade(label="Autor", menu=autor_menu)
 # Dodawanie opcji do menu "Plik"
 plik_menu.add_command(label="Otwórz mape", command = otworz_mape)
 plik_menu.add_separator()
-plik_menu.add_command(label="Stwórz macierz", command = tworzenie_macierzy(filepath))
+plik_menu.add_command(label="Stwórz macierz", command=lambda: tworzenie_macierzy(filepath))
+plik_menu.add_separator()
+plik_menu.add_command(label="Działanie programu", command=dzialanie_programu)
 plik_menu.add_separator()
 plik_menu.add_command(label="Wyjdź", command=wyjdz)
 
 
 # Dodawanie opcji do menu Iteracja
 iteracja_menu.add_command(label="Iteracja x 2", command=lambda: rysowanie_mapy(2))  # Podaj odpowiednią liczbę iteracji
-iteracja_menu.add_separator()
+iteracja_menu.add_command(label="Iteracja x 5", command=lambda: rysowanie_mapy(5)) 
+iteracja_menu.add_command(label="Iteracja x 10", command=lambda: rysowanie_mapy(10)) 
+
+
 
 kierunek_menu.add_command(label="Dyfuzja", command=dyfuzja)
 kierunek_menu.add_command(label="Północ", command=polnoc)
@@ -442,24 +446,40 @@ kierunek_menu.add_command(label="Północny zachód", command=polnocny_zachod)
 
 # Dodawanie opcji do menu Autor
 autor_menu.add_command(label="O autorze", command=autor)
-autor_menu.add_separator()
+
 
 
 # Dodaj pole tekstowe do wprowadzenia liczby iteracji
 iteracje_entry = tk.Entry(root)
 iteracje_entry.pack()
 
+
+
 # Utwórz funkcję, która będzie wywoływana po kliknięciu przycisku "Start"
 def rozpocznij_symulacje():
     # Pobierz wartość wprowadzoną przez użytkownika
-    liczba_iteracji = int(iteracje_entry.get())
-    
-    # Wywołaj funkcję rysowanie_mapy z wprowadzoną liczbą iteracji
-    rysowanie_mapy(liczba_iteracji)
+    liczba_iteracji_str = iteracje_entry.get()
+
+    try:
+        liczba_iteracji = int(liczba_iteracji_str)
+        # Pobierz wartość wprowadzoną przez użytkownika
+        if liczba_iteracji <= 0:
+            messagebox.showerror("Błąd", "Wpisz liczbę całkowitą większą od zera, np. 5, 20, itp.")
+        else:
+            # Wywołaj funkcję rysowanie_mapy z wprowadzoną liczbą iteracji
+            rysowanie_mapy(liczba_iteracji)
+    except ValueError:
+        messagebox.showerror("Błąd", "Wpisz liczbę całkowitą większą od zera, np. 5, 20, itp.")
+
+
+
 
 # Dodaj przycisk "Start" do rozpoczęcia symulacji
 start_button = tk.Button(root, text="Start", command=rozpocznij_symulacje)
 start_button.pack()
+
+
+
 
 
 root.mainloop()
