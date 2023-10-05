@@ -4,8 +4,6 @@ from PIL import Image, ImageTk
 import numpy as np
 
 
-#filepath = 'C:\\kodilla\\CA\\grafiki\\tescik1.bmp'
-
 #Dyfuzja jako stan początkowy rozpływu ropy: kierunek = 0
 kierunek = 0
 
@@ -46,7 +44,6 @@ def otworz_mape():
                 
 
 
-
                 canvas.create_rectangle(
                     j * cell_width,
                     i * cell_height,
@@ -59,8 +56,6 @@ def otworz_mape():
     
         # Zamknij plik BMP - tu może być powód problemu !!! ??????
         img.close()
-
-
 
 
 
@@ -84,7 +79,6 @@ def tworzenie_macierzy(filepath):
                 macierz[y,x] = ["U"]
 
     img.close()
-    print("macierz stworzona")
     return macierz
 
 
@@ -187,8 +181,6 @@ def iteracja(macierz):
 
 
 
-
-
             # Logika dla komórki brzegowej
             elif macierz[i][j][0] == "KB":
 
@@ -220,12 +212,7 @@ def iteracja(macierz):
 
 
             
-
-
-
             elif macierz[i][j][0] == "L" or macierz[i][j][0] == "U":
-
-
                 pass
                 
                         
@@ -256,15 +243,20 @@ def rysowanie_mapy(liczba_iteracji):
                     for j in range(len(macierz[0])):
                         value = macierz[i][j]
                         if value[0] == 'S':
-                            color = get_sim_sea_color(value)
+                            
+                            color = get_sim_sea_color(value)  # Pobierz kolor jako krotkę RGB
+                            color_hex = "#{:02x}{:02x}{:02x}".format(*color)  # Przekształć kolor na heksadecymalny format
                             canvas.create_rectangle(
                                 j * cell_width,
                                 i * cell_height,
                                 (j + 1) * cell_width,
                                 (i + 1) * cell_height,
-                                fill=color,
+                                fill = color_hex,
                                 outline=""
+                                
                             )
+
+                           
                         elif value[0] == "KB":
                             color = get_sim_border_color(value)
                             canvas.create_rectangle(
@@ -277,9 +269,6 @@ def rysowanie_mapy(liczba_iteracji):
                             )
                             
     
-
-
-
 
 # Funkcja do przypisywania kolorów do początkowej macierzy na podstawie wartości
 def get_color(value):
@@ -296,25 +285,36 @@ def get_color(value):
     
 # Kolorystyka dla komórek morza
 def get_sim_sea_color(value):
+    color_mapping = {
+        "black": (0, 0, 0),
+        "brown": (255, 0, 0),
+        "purple": (255, 0, 85),
+        "red": (255, 0, 170),
+        "orange": (255, 0, 255),
+        "yellow": (195, 0, 255),
+        "cyan": (130, 0, 255),
+        "white": (85, 0, 255),
+        "blue": (0, 0, 255)
+    }
 
     if value[1] >= 100:
-        return "black"
+        return color_mapping["black"]
     elif value[1] >= 75 and value[1] < 100:
-        return "brown"
+        return color_mapping["brown"]
     elif value[1] >= 50 and value[1] < 75:
-        return "purple"
+        return color_mapping["purple"]
     elif value[1] >= 25 and value[1] < 50:
-        return "red"
+        return color_mapping["red"]
     elif value[1] >= 15 and value[1] < 25:
-        return "orange"
+        return color_mapping["orange"]
     elif value[1] >= 7 and value[1] < 15:
-        return "yellow"
+        return color_mapping["yellow"]
     elif value[1] >= 3 and value[1] < 7:
-        return "cyan"
+        return color_mapping["cyan"]
     elif value[1] >= 0.2 and value[1] < 3:
-        return "white"
+        return color_mapping["white"]
     elif value[1] < 0.2:
-        return "blue"
+        return color_mapping["blue"]
     
 
 # Kolorystyka dla komórek brzegowych z zawartością ropy
@@ -332,6 +332,17 @@ def get_sim_border_color(value):
         return "black"
 
 
+def get_pixel_xy(event):
+    x = int(canvas.canvasx(event.x))
+    y = int(canvas.canvasy(event.y))
+    
+    print(f"Współrzędne na Canvasie: x={x}, y={y}")
+    wsp_x_komorki = round(x / 4)
+    wsp_y_komorki = round(y / 4)
+    print("Jest to komórka o współrzędnych: ", wsp_x_komorki, wsp_y_komorki)
+
+    print()
+    print(macierz[wsp_x_komorki][wsp_y_komorki])
 
 
 def autor():
@@ -378,11 +389,8 @@ def polnocny_zachod():
     
 
 
-
-
 def wyjdz():
     root.quit()
-
 
 
 
@@ -417,8 +425,6 @@ menu_bar.add_cascade(label="Autor", menu=autor_menu)
 
 # Dodawanie opcji do menu "Plik"
 plik_menu.add_command(label="Otwórz mape", command = otworz_mape)
-plik_menu.add_separator()
-plik_menu.add_command(label="Stwórz macierz", command=lambda: tworzenie_macierzy(filepath))
 plik_menu.add_separator()
 plik_menu.add_command(label="Działanie programu", command=dzialanie_programu)
 plik_menu.add_separator()
@@ -479,7 +485,7 @@ start_button = tk.Button(root, text="Start", command=rozpocznij_symulacje)
 start_button.pack()
 
 
-
+canvas.bind("<Button-1>", get_pixel_xy)
 
 
 root.mainloop()
