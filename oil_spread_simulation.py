@@ -342,7 +342,24 @@ def get_pixel_xy(event):
     print("Jest to komórka o współrzędnych: ", wsp_x_komorki, wsp_y_komorki)
 
     print()
-    print(macierz[wsp_x_komorki][wsp_y_komorki])
+    print(macierz[wsp_y_komorki][wsp_x_komorki])
+
+    if macierz[wsp_y_komorki][wsp_x_komorki][0] == "S":
+        macierz[wsp_y_komorki][wsp_x_komorki][1] += 2000
+        canvas.create_rectangle(
+                                wsp_x_komorki * cell_width,
+                                wsp_y_komorki * cell_height,
+                                (wsp_x_komorki + 1) * cell_width,
+                                (wsp_y_komorki + 1) * cell_height,
+                                fill = "black",
+                                outline=""
+                                
+                            )
+
+
+
+
+
 
 
 def autor():
