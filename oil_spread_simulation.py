@@ -74,7 +74,7 @@ def tworzenie_macierzy(filepath):
             elif pixel_color == (250, 200, 50):
                 macierz[y, x] = ["KB", 0]
             elif pixel_color == (0, 0, 0):
-                macierz[y, x] = ["S", 2000]
+                macierz[y, x] = ["S", 1000]
             elif pixel_color == (200,200,200):
                 macierz[y,x] = ["U"]
 
@@ -337,15 +337,15 @@ def get_pixel_xy(event):
     y = int(canvas.canvasy(event.y))
     
     print(f"Współrzędne na Canvasie: x={x}, y={y}")
-    wsp_x_komorki = round(x / 4)
-    wsp_y_komorki = round(y / 4)
+    wsp_x_komorki = round(x / cell_width)
+    wsp_y_komorki = round(y / cell_width)
     print("Jest to komórka o współrzędnych: ", wsp_x_komorki, wsp_y_komorki)
 
     print()
     print(macierz[wsp_y_komorki][wsp_x_komorki])
 
     if macierz[wsp_y_komorki][wsp_x_komorki][0] == "S":
-        macierz[wsp_y_komorki][wsp_x_komorki][1] += 2000
+        macierz[wsp_y_komorki][wsp_x_komorki][1] += 1000
         canvas.create_rectangle(
                                 wsp_x_komorki * cell_width,
                                 wsp_y_komorki * cell_height,
@@ -420,9 +420,11 @@ root.geometry("1800x960")
 canvas = tk.Canvas(root, width=1800, height=960)
 canvas.pack()
 
+
+
 # Wyświetlanie macierzy w formie graficznej
-cell_width = 4
-cell_height = 4
+cell_width = 50 # rozmiar pionowy
+cell_height = 50 # rozmiar poziomy
 
 
 # Tworzenie paska menu
@@ -449,10 +451,12 @@ plik_menu.add_command(label="Wyjdź", command=wyjdz)
 
 
 # Dodawanie opcji do menu Iteracja
+iteracja_menu.add_command(label="Iteracja x 1", command=lambda: rysowanie_mapy(1)) 
 iteracja_menu.add_command(label="Iteracja x 2", command=lambda: rysowanie_mapy(2))  # Podaj odpowiednią liczbę iteracji
 iteracja_menu.add_command(label="Iteracja x 5", command=lambda: rysowanie_mapy(5)) 
 iteracja_menu.add_command(label="Iteracja x 10", command=lambda: rysowanie_mapy(10)) 
 
+iteracja_menu.add_command(label="Iteracja x 25", command=lambda: rysowanie_mapy(25))
 
 
 kierunek_menu.add_command(label="Dyfuzja", command=dyfuzja)
